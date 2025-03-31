@@ -1,0 +1,12 @@
+.title {
+  flex-grow: 1;
+}
+
+.heading-container {
+  display: flex;
+  align-items: center;
+
+  h2 {
+    flex-grow: 1;
+  }
+}

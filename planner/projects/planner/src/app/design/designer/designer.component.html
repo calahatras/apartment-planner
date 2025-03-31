@@ -1,0 +1,21 @@
+<mat-toolbar>
+  <span class="toolbar-title">{{ floor().name }}</span>
+  <button mat-icon-button (click)="addFurniture()" matTooltip="Add Furniture">
+    <mat-icon svgIcon="package-variant-closed-plus"></mat-icon>
+  </button>
+  <button mat-icon-button (click)="resetView()" matTooltip="Reset View">
+    <mat-icon svgIcon="refresh"></mat-icon>
+  </button>
+</mat-toolbar>
+<svg width="800" height="600" style="border:1px solid black;" #designerRoot (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)"
+  (wheel)="onWheel($event)">
+  <g [attr.transform]="transform()">
+    <!-- Draw each floor plan vertex with an edge between them -->
+    @for (vertex of floor().plan; track vertex) {
+    <circle [attr.cx]="vertex.x" [attr.cy]="vertex.y" r="5" fill="peachpuff" (mousedown)="selectVertex($event, vertex)"></circle>
+    }
+    @for (edge of edges(); track edge) {
+    <line [attr.x1]="edge.x1" [attr.y1]="edge.y1" [attr.x2]="edge.x2" [attr.y2]="edge.y2" stroke="green" stroke-width="2"></line>
+    }
+  </g>
+</svg>

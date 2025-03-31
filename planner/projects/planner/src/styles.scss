@@ -1,0 +1,24 @@
+@use './variables';
+
+html,
+body {
+  height: 100%;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('./assets/fonts/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+body {
+  margin: 0;
+  font-family: Noto Sans, 'Helvetica Neue', sans-serif;
+}
+
+.container {
+  padding: variables.$spacer;
+}
+
+.toolbar-title {
+  flex-grow: 1;
+}

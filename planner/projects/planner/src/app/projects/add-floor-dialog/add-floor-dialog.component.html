@@ -1,0 +1,13 @@
+<form [formGroup]="addFloorForm" (ngSubmit)="dialogRef.close(addFloorForm.value)">
+  <h2 mat-dialog-title>Add Floor</h2>
+  <mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required name="floor-name">
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button color="primary" type="submit">Add</button>
+  </mat-dialog-actions>
+</form>

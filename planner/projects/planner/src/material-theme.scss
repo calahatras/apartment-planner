@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$cyan-palette,
+    typography: 'Noto Sans',
+    density: 0
+  ));
+}
+
+:root {
+  @include mat.toolbar-overrides((
+    container-background-color: var(--mat-sys-primary-container),
+  ));
+}

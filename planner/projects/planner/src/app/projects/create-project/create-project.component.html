@@ -1,0 +1,26 @@
+<form [formGroup]="projectForm" (ngSubmit)="onSubmit(projectForm.value)">
+  <div class="form-group">
+    <mat-form-field>
+      <mat-label for="name">Name</mat-label>
+      <input matInput type="text" id="name" formControlName="name">
+      @if (nameControl.hasError('unique')) {
+      <mat-error>Name is already taken</mat-error>
+      } @else if (nameControl.hasError('required')) {
+      <mat-error>Name is required</mat-error>
+      } @else if (nameControl.hasError('minlength')) {
+      <mat-error>Name must be at least {{ nameControl.errors?.['minlength'].requiredLength }} characters long, you are missing {{ nameControl.errors?.['minlength'].requiredLength -
+        nameControl.errors?.['minlength'].actualLength }} characters</mat-error>
+      }
+
+      <mat-hint>The name of the project</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label for="description">Description</mat-label>
+      <textarea matInput type="text" id="description" formControlName="description" rows="4"></textarea>
+      <mat-hint>An optional description for the project</mat-hint>
+    </mat-form-field>
+  </div>
+  <div class="actions">
+    <button mat-raised-button type="submit" [disabled]="!projectForm.valid">Create</button>
+  </div>
+</form>

@@ -1,0 +1,16 @@
+<mat-toolbar>
+  <h2>Projects</h2>
+  <div class="actions">
+    <button mat-icon-button [routerLink]="['new']">
+      <mat-icon svgIcon="plus"></mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+<mat-nav-list>
+  @for (project of store.projects(); track project.id) {
+  <mat-list-item [routerLink]="[project.id]">
+    <h3 mat-line>{{ project.name }}</h3>
+    <p mat-line>{{ project.description }}</p>
+  </mat-list-item>
+  }
+</mat-nav-list>

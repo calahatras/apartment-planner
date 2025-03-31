@@ -1,0 +1,28 @@
+<mat-toolbar>
+  <span class="title">Edit Project</span>
+</mat-toolbar>
+
+<section class="container">
+  <header>
+    <h1>{{ project()?.name }}</h1>
+    <div class="heading-container">
+      <h2>Floors</h2>
+      <button mat-icon-button (click)="addFloor()" matTooltip="Add Floor">
+        <mat-icon svgIcon="plus"></mat-icon>
+      </button>
+    </div>
+  </header>
+  <mat-nav-list>
+    @for (floor of project()?.floors; track floor.id) {
+    <mat-list-item (click)="apartmentSelectionForm.patchValue({ id: floor.id })">
+      <h3 matLine>{{ floor.name }}</h3>
+    </mat-list-item>
+    }
+  </mat-nav-list>
+  @if (apartmentFloor(); as floor) {
+  <div>
+    <app-designer [floor]="floor">
+    </app-designer>
+  </div>
+  }
+</section>
