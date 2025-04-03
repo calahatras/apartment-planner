@@ -1,16 +1,29 @@
-import { Component, computed, ElementRef, HostListener, input, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, input, output, signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { addAppIcon } from '../../icons/add-app-icon';
-import { ApartmentFloor, Vertex } from '../../projects/store/project';
+import { ApartmentFloor, Furniture, Vertex } from '../../projects/store/project';
+import { MatDialog } from '@angular/material/dialog';
+import { AskAgentDialogComponent } from '../../agent/ask-agent-dialog/ask-agent-dialog.component';
+import { HttpClient } from '@angular/common/http';
+import { filter, switchMap, tap } from 'rxjs';
 
 interface Edge {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
+}
+
+interface CreatedFurniture {
+  name: string;
+  origin: { x: number, y: number };
+  angle: number;
+  width: number;
+  depth: number;
+  texture: string;
 }
 
 @Component({
@@ -26,7 +39,18 @@ interface Edge {
 })
 export class DesignerComponent {
   public readonly floor = input.required<ApartmentFloor>();
+  protected readonly floorFurniture = computed(() => this.floor().furniture.map(item => ({
+    ...item,
+    poly: item.bounds.map(b => `${b.x},${b.y}`).join(' '),
+  })));
   protected readonly designerRoot = viewChild.required<ElementRef<SVGElement>>('designerRoot');
+
+  public readonly furnitureAdded = output<Furniture>();
+  public readonly furnitureRemoved = output<Furniture['id']>();
+  public readonly furnitureUpdated = output<Furniture>();
+
+  private readonly dialog = inject(MatDialog);
+  private readonly http = inject(HttpClient);
 
   protected readonly edges = computed<Edge[]>(() => {
     const vertices = this.floor().plan;
@@ -52,11 +76,56 @@ export class DesignerComponent {
   protected readonly transform = signal<string>('');
 
   constructor() {
-    addAppIcon('package-variant-closed-plus', 'refresh');
+    addAppIcon(
+      'creation',
+      'package-variant-closed-plus',
+      'refresh',
+    );
   }
 
   protected addFurniture() {
     console.log('add furniture');
+  }
+
+  protected askAgent() {
+    const ref = this.dialog.open(
+      AskAgentDialogComponent,
+      {
+        data: {
+          title: 'Ask Agent',
+          message: 'What furniture do you want to add?',
+        },
+      },
+    );
+    ref.afterClosed().pipe(
+      filter(Boolean),
+      tap(c => console.log(c)),
+      switchMap((result: string) =>
+        this.http.post<CreatedFurniture>(
+          'https://localhost:7009/api/ask',
+          { question: result, name: this.floor().name },
+          { headers: { 'Content-Type': 'application/json' } },
+        ),
+      ),
+    ).subscribe((response) => {
+      console.log(response);
+      const defaultFurniture: Pick<Furniture, 'id' | 'name'> = {
+        id: crypto.randomUUID(),
+        name: 'Default',
+      };
+      const scale = 1;
+      this.furnitureAdded.emit({
+        ...defaultFurniture,
+        ...response,
+        height: 1,
+        bounds: [
+          { x: response.origin.x * scale, y: response.origin.y * scale },
+          { x: (response.origin.x + response.width) * scale, y: response.origin.y * scale },
+          { x: (response.origin.x + response.width) * scale, y: (response.origin.y + response.depth) * scale },
+          { x: response.origin.x * scale, y: (response.origin.y + response.depth) * scale },
+        ],
+      });
+    });
   }
 
   protected resetView() {

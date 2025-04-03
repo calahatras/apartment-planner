@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
@@ -15,7 +16,7 @@ import { DesignerComponent } from '../../design/designer/designer.component';
 import { FormGroupControlConfig } from '../../forms/form-group-control-config';
 import { addAppIcon } from '../../icons/add-app-icon';
 import { AddFloorDialogComponent } from '../add-floor-dialog/add-floor-dialog.component';
-import { ApartmentFloor, Project } from '../store/project';
+import { ApartmentFloor, Furniture, Project } from '../store/project';
 import { ProjectsStore } from '../store/projects.store';
 
 interface ApartmentFloorFormData {
@@ -43,6 +44,7 @@ interface ApartmentFloorFormData {
 export class EditProjectComponent {
   private readonly dialog = inject(MatDialog);
   protected readonly projectStore = inject(ProjectsStore);
+  private readonly snack = inject(MatSnackBar);
   protected readonly projectId = toSignal<Project['id']>(
     inject(ActivatedRoute).params.pipe(
       map(params => params['id']),
@@ -80,7 +82,10 @@ export class EditProjectComponent {
   });
 
   constructor() {
-    addAppIcon('plus');
+    addAppIcon(
+      'delete',
+      'plus',
+    );
   }
 
   protected addFloor(): void {
@@ -94,6 +99,28 @@ export class EditProjectComponent {
         this.saveProject(projectId, result);
       }
     });
+  }
+
+  protected removeFloor(floorId: ApartmentFloor['id']): void {
+    this.projectStore.removeFloor(this.projectId()!, floorId);
+    this.snack.open('Floor removed', 'Close', {
+      duration: 2000,
+    });
+  }
+
+  protected addFurniture(furniture: Furniture): void {
+    this.projectStore.addFurniture(this.projectId()!, this.apartmentFloorId()!, furniture);
+  }
+
+  protected removeFurniture(furnitureId: Furniture['id']): void {
+    this.projectStore.removeFurniture(this.projectId()!, this.apartmentFloorId()!, furnitureId);
+    this.snack.open('Furniture removed', 'Close', {
+      duration: 2000,
+    });
+  }
+
+  protected updateFurniture(furniture: Furniture): void {
+    this.projectStore.updateFurniture(this.projectId()!, this.apartmentFloorId()!, furniture);
   }
 
   protected saveProject(projectId: Project['id'], floor: Partial<ApartmentFloorFormData>): void {
@@ -110,63 +137,4 @@ export class EditProjectComponent {
     };
     this.projectStore.addFloor(projectId, floorData);
   }
-
-  //implements AfterViewInit, OnDestroy {
-  /*
-  private readonly svgRef = viewChild.required<ElementRef<SVGElement>>('svg');
-  private selectedVertex: SVGCircleElement | null = null;
-  ngAfterViewInit() {
-    const svg = this.svgRef().nativeElement;
-    console.log(svg);
-    const vertices = svg.querySelectorAll<SVGCircleElement>('.vertex');
-
-    vertices.forEach(vertex => {
-      vertex.addEventListener('mousedown', this.onMouseDown);
-    });
-
-    svg.addEventListener('mousemove', this.onMouseMove);
-    svg.addEventListener('mouseup', this.onMouseUp);
-  }
-
-  ngOnDestroy() {
-    const svg = this.svgRef().nativeElement;
-    const vertices = svg.querySelectorAll<SVGCircleElement>('.vertex');
-
-    vertices.forEach(vertex => {
-      vertex.removeEventListener('mousedown', this.onMouseDown);
-    });
-
-    svg.removeEventListener('mousemove', this.onMouseMove);
-    svg.removeEventListener('mouseup', this.onMouseUp);
-  }
-
-  private onMouseDown = (event: MouseEvent) => {
-    this.selectedVertex = event.target as SVGCircleElement;
-  };
-
-  private onMouseMove = (event: MouseEvent) => {
-    if (this.selectedVertex) {
-      const svg = this.svgRef().nativeElement;
-      const rect = svg.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      this.selectedVertex.setAttribute('cx', x.toString());
-      this.selectedVertex.setAttribute('cy', y.toString());
-      this.updatePolygon();
-    }
-  };
-
-  private onMouseUp = () => {
-    this.selectedVertex = null;
-  };
-
-  private updatePolygon() {
-    const svg = this.svgRef().nativeElement;
-    const vertices = svg.querySelectorAll<SVGCircleElement>('.vertex');
-    const points = Array.from(vertices).map(vertex => {
-      return `${vertex.getAttribute('cx')},${vertex.getAttribute('cy')}`;
-    }).join(' ');
-    svg.querySelector<SVGPolygonElement>('#apartment-plan')!.setAttribute('points', points);
-  }
-  */
 }

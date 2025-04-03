@@ -1,5 +1,8 @@
 <mat-toolbar>
   <span class="toolbar-title">{{ floor().name }}</span>
+  <button mat-icon-button (click)="askAgent()" matTooltip="Ask agent">
+    <mat-icon svgIcon="creation"></mat-icon>
+  </button>
   <button mat-icon-button (click)="addFurniture()" matTooltip="Add Furniture">
     <mat-icon svgIcon="package-variant-closed-plus"></mat-icon>
   </button>
@@ -7,7 +10,7 @@
     <mat-icon svgIcon="refresh"></mat-icon>
   </button>
 </mat-toolbar>
-<svg width="800" height="600" style="border:1px solid black;" #designerRoot (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)"
+<svg width="100%" height="600" style="border:1px solid black;" #designerRoot (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)"
   (wheel)="onWheel($event)">
   <g [attr.transform]="transform()">
     <!-- Draw each floor plan vertex with an edge between them -->
@@ -16,6 +19,10 @@
     }
     @for (edge of edges(); track edge) {
     <line [attr.x1]="edge.x1" [attr.y1]="edge.y1" [attr.x2]="edge.x2" [attr.y2]="edge.y2" stroke="green" stroke-width="2"></line>
+    }
+    @for (furniture of floorFurniture(); track furniture) {
+    <polygon [attr.points]="furniture.poly" fill="lightblue" stroke="blue" stroke-width="2"></polygon>
+    <text [attr.x]="furniture.origin.x + 12" [attr.y]="furniture.origin.y + 12" fill="black" font-size="12" text-anchor="start">{{ furniture.name }}</text>
     }
   </g>
 </svg>

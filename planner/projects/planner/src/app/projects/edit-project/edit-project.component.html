@@ -15,13 +15,16 @@
   <mat-nav-list>
     @for (floor of project()?.floors; track floor.id) {
     <mat-list-item (click)="apartmentSelectionForm.patchValue({ id: floor.id })">
-      <h3 matLine>{{ floor.name }}</h3>
+      <h3 matListItemTitle>{{ floor.name }}</h3>
+      <button mat-icon-button matListItemMeta (click)="removeFloor(floor.id)" matTooltip="Remove Floor">
+        <mat-icon svgIcon="delete"></mat-icon>
+      </button>
     </mat-list-item>
     }
   </mat-nav-list>
   @if (apartmentFloor(); as floor) {
   <div>
-    <app-designer [floor]="floor">
+    <app-designer [floor]="floor" (furnitureAdded)="addFurniture($event)" (furnitureRemoved)="removeFurniture($event)" (furnitureUpdated)="updateFurniture($event)">
     </app-designer>
   </div>
   }

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { StorageService } from '../../storage/storage.service';
-import { ApartmentFloor, Project } from './project';
+import { ApartmentFloor, Furniture, Project } from './project';
 
 interface ProjectsState {
   projects: Project[];
@@ -80,6 +80,103 @@ export const ProjectsStore = signalStore(
       const db = await storage.openWriteStore<Project>('projects');
       await db.update(updatedProject);
       console.log('added floor to project', updatedProject);
+    },
+    async removeFloor(projectId: Project['id'], floorId: ApartmentFloor['id']): Promise<void> {
+      const existingProject = store.projects().find(p => p.id === projectId);
+      if (!existingProject) {
+        throw new Error(`Project with id ${projectId} not found`);
+      }
+      const updatedProject: Project = {
+        ...existingProject,
+        floors: existingProject.floors.filter(f => f.id !== floorId),
+      };
+      patchState(store, state => ({
+        ...state,
+        projects: state.projects.map(p => p.id === projectId ? updatedProject : p),
+      }));
+
+      const db = await storage.openWriteStore<Project>('projects');
+      await db.update(updatedProject);
+      console.log('removed floor from project', updatedProject);
+    },
+    async addFurniture(projectId: Project['id'], floorId: ApartmentFloor['id'], furniture: Furniture): Promise<void> {
+      const existingProject = store.projects().find(p => p.id === projectId);
+      if (!existingProject) {
+        throw new Error(`Project with id ${projectId} not found`);
+      }
+      const existingFloor = existingProject.floors.find(f => f.id === floorId);
+      if (!existingFloor) {
+        throw new Error(`Floor with id ${floorId} not found`);
+      }
+      const updatedFloor: ApartmentFloor = {
+        ...existingFloor,
+        furniture: [
+          ...existingFloor.furniture,
+          furniture,
+        ],
+      };
+      const updatedProject: Project = {
+        ...existingProject,
+        floors: existingProject.floors.map(f => f.id === floorId ? updatedFloor : f),
+      };
+      patchState(store, state => ({
+        ...state,
+        projects: state.projects.map(p => p.id === projectId ? updatedProject : p),
+      }));
+
+      const db = await storage.openWriteStore<Project>('projects');
+      await db.update(updatedProject);
+      console.log('added furniture to floor', updatedProject);
+    },
+    async updateFurniture(projectId: Project['id'], floorId: ApartmentFloor['id'], furniture: Furniture): Promise<void> {
+      const existingProject = store.projects().find(p => p.id === projectId);
+      if (!existingProject) {
+        throw new Error(`Project with id ${projectId} not found`);
+      }
+      const existingFloor = existingProject.floors.find(f => f.id === floorId);
+      if (!existingFloor) {
+        throw new Error(`Floor with id ${floorId} not found`);
+      }
+      const updatedFloor: ApartmentFloor = {
+        ...existingFloor,
+        furniture: existingFloor.furniture.map(f => f.id === furniture.id ? furniture : f),
+      };
+      const updatedProject: Project = {
+        ...existingProject,
+        floors: existingProject.floors.map(f => f.id === floorId ? updatedFloor : f),
+      };
+      patchState(store, state => ({
+        ...state,
+        projects: state.projects.map(p => p.id === projectId ? updatedProject : p),
+      }));
+      const db = await storage.openWriteStore<Project>('projects');
+      await db.update(updatedProject);
+      console.log('updated furniture in floor', updatedProject);
+    },
+    async removeFurniture(projectId: Project['id'], floorId: ApartmentFloor['id'], furnitureId: Furniture['id']): Promise<void> {
+      const existingProject = store.projects().find(p => p.id === projectId);
+      if (!existingProject) {
+        throw new Error(`Project with id ${projectId} not found`);
+      }
+      const existingFloor = existingProject.floors.find(f => f.id === floorId);
+      if (!existingFloor) {
+        throw new Error(`Floor with id ${floorId} not found`);
+      }
+      const updatedFloor: ApartmentFloor = {
+        ...existingFloor,
+        furniture: existingFloor.furniture.filter(f => f.id !== furnitureId),
+      };
+      const updatedProject: Project = {
+        ...existingProject,
+        floors: existingProject.floors.map(f => f.id === floorId ? updatedFloor : f),
+      };
+      patchState(store, state => ({
+        ...state,
+        projects: state.projects.map(p => p.id === projectId ? updatedProject : p),
+      }));
+      const db = await storage.openWriteStore<Project>('projects');
+      await db.update(updatedProject);
+      console.log('removed furniture from floor', updatedProject);
     },
   })),
   withHooks({

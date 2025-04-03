@@ -75,7 +75,8 @@
               "buildTarget": "planner:build:production"
             },
             "development": {
-              "buildTarget": "planner:build:development"
+              "buildTarget": "planner:build:development",
+              "ssl": true
             }
           },
           "defaultConfiguration": "development"

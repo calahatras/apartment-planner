@@ -1,0 +1,10 @@
+<mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Ask Agent</mat-label>
+    <textarea matInput [(ngModel)]="question" rows="5" cols="30"></textarea>
+  </mat-form-field>
+  <div class="dialog-actions">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="question" cdkFocusInitial>Ask</button>
+  </div>
+</mat-dialog-content>

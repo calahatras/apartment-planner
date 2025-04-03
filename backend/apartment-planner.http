@@ -1,0 +1,6 @@
+@apartment_planner_HostAddress = http://localhost:5258
+
+GET {{apartment_planner_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

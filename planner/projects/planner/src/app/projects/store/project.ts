@@ -6,13 +6,18 @@ export interface Vertex {
 }
 
 export interface Furniture {
-  id: IDBValidKey;
-  name: string;
-  bounds: Vertex[];
+  readonly id: IDBValidKey;
+  readonly name: string;
+  readonly bounds: Vertex[];
+
+  readonly origin: Vertex;
+  readonly depth: number;
   readonly width: number;
   readonly height: number;
-  readonly depth: number;
-  texture: string;
+
+  readonly angle: number;
+
+  readonly texture: string;
 }
 
 export interface ApartmentFloor {

@@ -9,8 +9,8 @@
 <mat-nav-list>
   @for (project of store.projects(); track project.id) {
   <mat-list-item [routerLink]="[project.id]">
-    <h3 mat-line>{{ project.name }}</h3>
-    <p mat-line>{{ project.description }}</p>
+    <h3 matListItemTitle>{{ project.name }}</h3>
+    <p matListItemLine>{{ project.description }}</p>
   </mat-list-item>
   }
 </mat-nav-list>

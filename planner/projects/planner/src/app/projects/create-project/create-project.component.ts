@@ -14,7 +14,7 @@ function isUnique<T>(
   values: T[],
 ): (control: AbstractControl) => { unique: boolean } | null {
   return ({ value }) =>
-    value && values.some(value => (value[key] as string).localeCompare(value as string))
+    value && values.some(item => (item[key] as string).localeCompare(value as string) === 0)
       ? { unique: true }
       : null;
 }
